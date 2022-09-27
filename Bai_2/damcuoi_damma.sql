@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Sep 26, 2022 at 01:45 PM
+-- Generation Time: Sep 26, 2022 at 02:23 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.0.19
 
@@ -26,18 +26,19 @@ DELIMITER $$
 -- Procedures
 --
 CREATE DEFINER=`root`@`%` PROCEDURE `cal_equip_spend` (OUT `total_spend` INT)   BEGIN
-	SELECT SUM(price) into total_spend
+	SELECT SUM(price * quantity) into total_spend
 	FROM Equipment;
 END$$
 
 CREATE DEFINER=`root`@`%` PROCEDURE `cal_food_spend` (OUT `total_spend` INT)   BEGIN
-	SELECT SUM(price) into total_spend
+	SELECT SUM(price * quantity) into total_spend
 	FROM Foods;
 END$$
 
 CREATE DEFINER=`root`@`%` PROCEDURE `cal_total_spend` (IN `food_spend` INT, IN `equip_spend` INT, OUT `total_spend` INT)   BEGIN
 	SET total_spend = food_spend + equip_spend;
-	INSERT INTO Spending_Statistics VALUES(1, 1, total_spend);
+	INSERT INTO Spending_Statistics
+ (id_event,total_spending) VALUES (1, total_spend);
 END$$
 
 DELIMITER ;
@@ -217,7 +218,9 @@ CREATE TABLE `Spending_Statistics` (
 --
 
 INSERT INTO `Spending_Statistics` (`id`, `id_event`, `total_spending`) VALUES
-(1, 1, 800000);
+(1, 1, 800000),
+(2, 1, 1600000),
+(3, 1, 1600000);
 
 --
 -- Indexes for dumped tables
@@ -346,7 +349,7 @@ ALTER TABLE `Person`
 -- AUTO_INCREMENT for table `Spending_Statistics`
 --
 ALTER TABLE `Spending_Statistics`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
